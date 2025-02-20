@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'expense_list.dart';
+
 class ExpenseStats extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => StatisticExp();
@@ -118,7 +120,8 @@ class StatisticExp extends State<ExpenseStats>
                         ],
                       ),
                       SizedBox(height: 5,),
-                      RichText(text: TextSpan(
+                      RichText(
+                          text: TextSpan(
                         text: "\$3,734",style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),
                         children:[
                           TextSpan(text: "/ \$4000 per month",style: TextStyle(fontWeight: FontWeight.w300,fontSize: 17)),
@@ -153,20 +156,67 @@ class StatisticExp extends State<ExpenseStats>
                 ),
               ),
             ),
+            SizedBox(height: 10,),
             Expanded(
               flex: 7,
-              child: Container(
-                color: Colors.green,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Expense Breakdown",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                      Container(
+                          width: 75,
+                          height: 35,
+                          decoration: BoxDecoration(
+                            color: Colors.black12,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Center(
+                                  child: Text(
+                                    "Week",
+                                    style: TextStyle(fontSize: 17),
+                                  )),
+                              Icon(Icons.keyboard_arrow_down),
+                            ],
+                          )),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          text: "Limit \$900",style: TextStyle(fontSize: 15,color: Colors.black),
+                          children: [
+                            TextSpan(
+                              text: "/ week",style: TextStyle(color: Colors.black45),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  )
+                ],
               ),
             ),
             Expanded(
               flex: 2,
-              child: Container(
-                color: Colors.yellow,
-              ),
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Spending Details",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                    Text("Your expenses are divided into 6 categories",style: TextStyle(fontSize: 16,),),
+                  ],
+                ),
+              )
             ),
-
-            SizedBox(height: 5,),
 
             Expanded(
               flex: 6,
@@ -221,7 +271,7 @@ class StatisticExp extends State<ExpenseStats>
                     children: [
                       IconButton(onPressed: ()
                       {
-
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>ExpenseList()));
                       },
                           icon: Icon(Icons.home,size: 35,color: Color(0xFFBDBBC7))),
                       IconButton(onPressed: ()
