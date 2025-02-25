@@ -1,13 +1,15 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'expense_list.dart';
 
-class ExpenseStats extends StatefulWidget {
+class ExpenseStatistics extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => StatisticExp();
 }
 
-class StatisticExp extends State<ExpenseStats>
+class StatisticExp extends State<ExpenseStatistics>
 {
   @override
   Widget build(BuildContext context) {
@@ -239,15 +241,14 @@ class StatisticExp extends State<ExpenseStats>
                       child: ListTile(
                         leading: Card(
                           child: Container(
+                            padding: EdgeInsets.all(5),
                             height: 40,
                             width: 40,
                             decoration: BoxDecoration(
-                              color: Color(0xFFE7E9F8),
+                              color: Colors.primaries[Random().nextInt(Colors.primaries.length-1)].shade50,
                               borderRadius: BorderRadius.circular(5),
-                              image: DecorationImage(
-                                image: AssetImage(myData[index]["image"]),
-                              ),
                             ),
+                            child: Image.asset(myData[index]["image"]),
                           ),
                         ),
                         title: Text(myData[index]["title"],style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,overflow: TextOverflow.ellipsis),),

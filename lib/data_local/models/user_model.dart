@@ -22,7 +22,7 @@ class UserModel {
       userId: map[DBHelper.COLUMN_USER_ID],
       userName: map[DBHelper.COLUMN_USER_NAME],
       uEmail: map[DBHelper.COLUMN_USER_EMAIL],
-      uPassword: map[DBHelper.COLUMN_PASSWORD],
+      uPassword: map[DBHelper.COLUMN_USER_PASSWORD],
       uPhone: map[DBHelper.COLUMN_USER_PHONE_NO],
       uCreatedAt: map[DBHelper.COLUMN_USER_CREATED_AT],
     );
@@ -33,7 +33,7 @@ class UserModel {
     return {
       DBHelper.COLUMN_USER_NAME: userName,
       DBHelper.COLUMN_USER_EMAIL: uEmail,
-      DBHelper.COLUMN_PASSWORD: uPassword,
+      DBHelper.COLUMN_USER_PASSWORD: uPassword,
       DBHelper.COLUMN_USER_PHONE_NO: uPhone,
       DBHelper.COLUMN_USER_CREATED_AT: uCreatedAt,
     };

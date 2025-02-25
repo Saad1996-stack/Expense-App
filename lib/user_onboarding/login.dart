@@ -1,7 +1,14 @@
+import 'package:expense_tracker_app/data_local/database/dbhelper.dart';
+import 'package:expense_tracker_app/user_onboarding/register.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../ui/expense_list.dart';
 
 class Login extends StatelessWidget
 {
+  DBHelper dbHelper = DBHelper.getInstance();
+
   TextEditingController user = TextEditingController();
   TextEditingController pass = TextEditingController();
 
@@ -15,6 +22,7 @@ class Login extends StatelessWidget
             text: "Smart Spending Starts Here\n",style: TextStyle(fontWeight: FontWeight.w900,fontSize: 25,color: Colors.black),
           ),
         ),
+        automaticallyImplyLeading: false,
       ),
       //resizeToAvoidBottomInset: true,
 
@@ -89,15 +97,26 @@ class Login extends StatelessWidget
                     child: Text("Forgot Password",style: TextStyle(fontWeight: FontWeight.w400,fontSize: 15,color: Colors.redAccent),),
                   ),
                   SizedBox(height: 10,),
-        
+
                   Card(
                     shape: RoundedRectangleBorder(
                         side: BorderSide(color: Color(0xFF5AE3A7)),
                       borderRadius: BorderRadius.circular(25)
                     ),
                     child: ElevatedButton(onPressed: ()
-                    {
-        
+                    async{
+                      bool check = await dbHelper.authenticateUser(email: user.text, password: pass.text);
+                      if(check)
+                        {
+                          /*SharedPreferences prefs = await SharedPreferences.getInstance();
+                          prefs.setBool("Login", true);*/
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User Successfully Logged-in!!")));
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>ExpenseList()));
+                        }
+                      else
+                        {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Invalid credentials please logged-in again!!")));
+                        }
                     },
                         child: Text("Login"),
                       style: ElevatedButton.styleFrom(
@@ -108,13 +127,19 @@ class Login extends StatelessWidget
                   ),
                   SizedBox(height: 15,),
         
-                  RichText(
-                      text:
-                      TextSpan(
-                    text: "Don't have an account! ",style: TextStyle(fontSize: 15,color: Colors.black),
-                      children: [
-                        TextSpan(text: "Please Register",style: TextStyle(fontSize: 15,color: Colors.red)),
-                      ],),
+                  InkWell(
+                    onTap: ()
+                    {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> Register()));
+                    },
+                    child: RichText(
+                        text:
+                        TextSpan(
+                      text: "Don't have an account! ",style: TextStyle(fontSize: 15,color: Colors.black),
+                        children: [
+                          TextSpan(text: "Please Register",style: TextStyle(fontSize: 15,color: Colors.red)),
+                        ],),
+                    ),
                   ),
                 ],
               ),

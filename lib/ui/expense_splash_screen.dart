@@ -1,5 +1,9 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../user_onboarding/login.dart';
 import 'expense_list.dart';
 
 class ExpenseSplashScreen extends StatefulWidget
@@ -8,7 +12,37 @@ class ExpenseSplashScreen extends StatefulWidget
   State<ExpenseSplashScreen> createState() => _ExpenseSplashScreenState();
 }
 
-class _ExpenseSplashScreenState extends State<ExpenseSplashScreen> {
+class _ExpenseSplashScreenState extends State<ExpenseSplashScreen>
+{
+  @override
+  void initState()
+  {
+    super.initState();
+    Timer(Duration(seconds: 3), ()async{
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int uid = prefs.getInt("user_id") ?? 0;
+
+      ///using if-else
+      /*if(uid > 0)
+      {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> ExpenseList()));
+      }
+      else
+      {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login()));
+      }*/
+
+      Widget navigateTo = Login();
+
+      if(uid > 0)
+      {
+        navigateTo = ExpenseList();
+      }
+
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> navigateTo));
+    });
+  }
+
   @override
   Widget build(BuildContext context)
   {
@@ -26,6 +60,7 @@ class _ExpenseSplashScreenState extends State<ExpenseSplashScreen> {
           ],
         ),
         centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         children: [
@@ -42,23 +77,6 @@ class _ExpenseSplashScreenState extends State<ExpenseSplashScreen> {
           ),
         ],
       ),
-      floatingActionButton:
-      SizedBox(
-        height: 70,
-        width: 70,
-        child: FloatingActionButton(
-          onPressed: ()
-          {
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>ExpenseList()));
-          },
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15)
-          ),
-          backgroundColor: Color(0xFFE78DBE),
-          child: Icon(Icons.arrow_right_alt,size: 40,color: Colors.white,),
-        ),
-      ),
-
     );
   }
 }

@@ -3,7 +3,7 @@ import 'package:expense_tracker_app/data_local/database/dbhelper.dart';
 class ExpenseModels {
   int eId;
   int userId;
-  int? eCategoryId;
+  int eCategoryId;
   String eTitle;
   String eDesc;
   String eType;
@@ -13,8 +13,8 @@ class ExpenseModels {
 
   ExpenseModels(
       {required this.eDate,
-      this.eCategoryId,
-      this.userId = 0,
+      required this.eCategoryId,
+      required this.userId,
       this.eId = 0,
       required this.eTitle,
       required this.eDesc,
@@ -32,16 +32,21 @@ class ExpenseModels {
       eType: map[DBHelper.COLUMN_EXPENSE_TYPE],
       eDate: map[DBHelper.COLUMN_EXPENSE_DATE],
       eCategoryId: map[DBHelper.COLUMN_EXPENSE_CATEGORY_ID],
+      userId: map[DBHelper.COLUMN_EXPENSE_FK_USER_ID],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
+      DBHelper.COLUMN_EXPENSE_FK_USER_ID : userId,
       DBHelper.COLUMN_EXPENSE_TITLE: eTitle,
       DBHelper.COLUMN_EXPENSE_DESC: eDesc,
       DBHelper.COLUMN_EXPENSE_AMOUNT: eAmount,
       DBHelper.COLUMN_EXPENSE_BALANCE: eBalance,
       DBHelper.COLUMN_EXPENSE_TYPE: eType,
+      DBHelper.COLUMN_EXPENSE_DATE: eDate,
+      DBHelper.COLUMN_EXPENSE_CATEGORY_ID: eCategoryId,
+
     };
   }
 }

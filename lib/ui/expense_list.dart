@@ -1,5 +1,13 @@
+import 'dart:math';
+
+import 'package:expense_tracker_app/ui/bloc/expense_bloc.dart';
+import 'package:expense_tracker_app/ui/bloc/expense_state.dart';
 import 'package:expense_tracker_app/ui/statistic_exp.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+
+import 'add_expense_page.dart';
 
 class ExpenseList extends StatefulWidget {
   @override
@@ -9,7 +17,8 @@ class ExpenseList extends StatefulWidget {
 class ExpenseLists extends State<ExpenseList> {
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> mData = [
+    DateFormat  df = DateFormat.yMMMd();
+   /* List<Map<String, dynamic>> mData = [
       {
         "title": "Shop",
         "subtitle": "Buy new clothes",
@@ -24,7 +33,7 @@ class ExpenseLists extends State<ExpenseList> {
         "image": "assets/images/ic_mobile-phone.png",
         "bgColor": 0xFFFEF4EA,
       },
-    ];
+    ];*/
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -170,9 +179,7 @@ class ExpenseLists extends State<ExpenseList> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 5,
-            ),
+
             Expanded(
               flex: 6,
               child: Column(
@@ -187,7 +194,7 @@ class ExpenseLists extends State<ExpenseList> {
                   ),
                   Card(
                     child: Container(
-                      height: 220,
+                      height: 210,
                       width: 390,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
@@ -197,16 +204,30 @@ class ExpenseLists extends State<ExpenseList> {
                       ),
                       child: Column(
                         children: [
-                          ListTile(
-                            leading: Text(
-                              "Tuesday, 14",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            trailing: Text(
-                              "-\$1380",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
+                          BlocBuilder<ExpenseBloc, ExpenseState>(builder: (_, state){
+                            if(state is ExpenseLoadingState)
+                              {
+                                return Center(child: CircularProgressIndicator(),);
+                              }
+                            if(state is ExpenseErrorState)
+                              {
+                                return Center(child: Text(state.errorMessageState),);
+                              }
+                            if(state is ExpenseLoadedState)
+                              {
+                                return state.loadedExpenseModels.isNotEmpty ? ListTile(
+                                  leading: Text(
+                                    df.format(DateTime.fromMillisecondsSinceEpoch(int.parse(state.loadedExpenseModels.first.eDate))),
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  trailing: Text(
+                                    "-\$1380",
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ) : Center(child: Text("No Expense Date and Amount"),);
+                              }
+                            return Container();
+                          }),
                           SizedBox(
                             width: 350,
                             child: Divider(
@@ -215,38 +236,56 @@ class ExpenseLists extends State<ExpenseList> {
                             ),
                           ),
                           Expanded(
-                            child: ListView.builder(
-                                itemCount: mData.length,
-                                itemBuilder: (context, index) {
-                                  return ListTile(
-                                    leading: Container(
-                                      height: 40,
-                                      width: 40,
-                                      decoration: BoxDecoration(
-                                          color: Color(mData[index]["bgColor"]),
-                                          //  color: Color(0xFFFCE5E6),
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          shape: BoxShape.rectangle,
-                                          image: DecorationImage(
-                                            image: AssetImage(
-                                                mData[index]["image"]),
-                                          )),
-                                    ),
-                                    title: Text(
-                                      mData[index]["title"],
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                    subtitle: Text(
-                                      mData[index]["subtitle"],
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                    trailing: Text(mData[index]["price"],
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: Color(0xFFE78DBE))),
-                                  );
-                                }),
+                            child: BlocBuilder<ExpenseBloc, ExpenseState>(builder: (_,state) {
+                              if (state is ExpenseLoadingState) {
+                                return Center(
+                                  child: CircularProgressIndicator(),);
+                              }
+                              if (state is ExpenseErrorState) {
+                                return Center(
+                                  child: Text(state.errorMessageState),);
+                              }
+                              if (state is ExpenseLoadedState) {
+                                return state.loadedExpenseModels.isNotEmpty
+                                    ? ListView.builder(
+                                    itemCount: state.loadedExpenseModels.length,
+                                    itemBuilder: (context, index) {
+                                      final expenses = state.loadedExpenseModels[index];
+                                      return ListTile(
+                                        leading: Container(
+                                          padding: EdgeInsets.all(5),
+                                          height: 40,
+                                          width: 40,
+                                          decoration: BoxDecoration(
+                                            color: Colors.primaries[Random()
+                                                .nextInt(
+                                                Colors.primaries.length - 1)]
+                                                .shade50,
+                                            borderRadius:
+                                            BorderRadius.circular(5),
+                                          ),
+                                          child: Text(""),
+                                          /*Image.asset(
+                                              mData[index]["image"]),*/
+                                        ),
+                                        title: Text(
+                                          expenses.eTitle,
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                        subtitle: Text(
+                                          expenses.eDesc,
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                        trailing: Text(expenses.eAmount.toString(),
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Color(0xFFE78DBE))),
+                                      );
+                                    })
+                                    : Center(child: Text("No Expenses yet"),);
+                              }
+                              return Container();
+                            }),
                           ),
                         ],
                       ),
@@ -292,16 +331,14 @@ class ExpenseLists extends State<ExpenseList> {
                               itemBuilder: (context, index) {
                                 return ListTile(
                                   leading: Container(
+                                    padding: EdgeInsets.all(5),
                                     height: 40,
                                     width: 40,
                                     decoration: BoxDecoration(
-                                        color: Color(0xFFFCE5E6),
+                                        color: Colors.primaries[Random().nextInt(Colors.primaries.length-1)].shade50,
                                         borderRadius: BorderRadius.circular(10),
-                                        shape: BoxShape.rectangle,
-                                        image: DecorationImage(
-                                          image: AssetImage(
-                                              "assets/images/ic_car.png"),
-                                        )),
+                                    ),
+                                    child: Image.asset("assets/images/ic_car.png"),
                                   ),
                                   title: Text(
                                     "Transportation",
@@ -344,12 +381,16 @@ class ExpenseLists extends State<ExpenseList> {
                       IconButton(
                           onPressed: ()
                           {
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=>ExpenseStats()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>ExpenseStatistics()));
                           },
                           icon: Icon(Icons.bar_chart,
                               size: 35, color: Color(0xFFBDBBC7))),
+
                       IconButton(
-                          onPressed: () {},
+                          onPressed: ()
+                          {
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=> AddExpensePage()));
+                          },
                           icon: Container(
                               decoration: BoxDecoration(
                                 color: Color(0xFFE78DBE),
@@ -360,6 +401,7 @@ class ExpenseLists extends State<ExpenseList> {
                                 size: 35,
                                 color: Colors.white,
                               ))),
+
                       IconButton(
                           onPressed: () {},
                           icon: Icon(

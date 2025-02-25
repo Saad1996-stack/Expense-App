@@ -1,11 +1,18 @@
+import 'package:expense_tracker_app/data_local/database/dbhelper.dart';
 import 'package:flutter/material.dart';
-import '../on_boarding/login.dart';
-import '../on_boarding/register.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path/path.dart';
+import '../user_onboarding/login.dart';
+import '../user_onboarding/register.dart';
+import 'bloc/expense_bloc.dart';
 import 'expense_list.dart';
 import 'expense_splash_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(BlocProvider(
+    create: (context) => ExpenseBloc(dbHelper: DBHelper.getInstance()),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -16,25 +23,21 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home:  Register(),
+      home: ExpenseSplashScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget
-{
+class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      appBar: AppBar(
-      ),
+      appBar: AppBar(),
       body: Container(),
     );
   }
