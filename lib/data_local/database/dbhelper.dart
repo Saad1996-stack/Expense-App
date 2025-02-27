@@ -137,7 +137,7 @@ class DBHelper {
   async{
     var db = await getDB();
     ///Now, data is coming at every index of this list
-    List<Map<String,dynamic>> mData = await db.query(TABLE_EXPENSE);
+    List<Map<String,dynamic>> mData = await db.query(TABLE_EXPENSE, orderBy: "$COLUMN_EXPENSE_DATE DESC");
 
     ///List data convert into Model
     List<ExpenseModels> mExpenses = [];
