@@ -77,17 +77,21 @@ class ExpenseLists extends State<ExpenseList> {
                   {
                     selectedType = 1;
                   }
-                  else
+                  else if(newValue == "Year wise")
                   {
                     selectedType = 2;
                   }
+                  else
+                    {
+                      selectedType = 3;
+                    }
                   context.read<ExpenseBloc>().add(FetchFilteredEvent(type: selectedType));
                   selectedFilter = newValue!;
                   setState(() {
 
                   });
                 },
-                items: <String>["Date wise", "Month wise", "Year wise"]
+                items: <String>["Date wise", "Month wise", "Year wise", "Category wise"]
                     .map<DropdownMenuItem<String>>((String value){
                   return DropdownMenuItem<String>(
                   value: value,
@@ -207,7 +211,7 @@ class ExpenseLists extends State<ExpenseList> {
                               itemCount: state.mFilteredExpense.length,
                                 itemBuilder: (context, index){
                                   //final expense = state.loadedExpenseModels[index];
-                                  return Container(
+                                  return state.mFilteredExpense[index].allExpense.isNotEmpty ?  Container(
                                     margin: const EdgeInsets.only(bottom: 15),
                                     padding: const EdgeInsets.all(15),
                                     decoration: BoxDecoration(
@@ -264,13 +268,14 @@ class ExpenseLists extends State<ExpenseList> {
                                                   ),
                                                   title: Text(state.mFilteredExpense[index].allExpense[childIndex].eTitle),
                                                   subtitle:Text(state.mFilteredExpense[index].allExpense[childIndex].eDesc),
-                                                  trailing:Text("\$${state.mFilteredExpense[index].allExpense[childIndex].eAmount}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold, color: state.mFilteredExpense[index].allExpense[childIndex].eAmount! < 0 ? Colors.red : Colors.green),),
+                                                  trailing:Text("\$${state.mFilteredExpense[index].allExpense[childIndex].eAmount}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold, color: state.mFilteredExpense[index].allExpense[childIndex].eAmount < 0 ? Colors.red : Colors.green),),
 
                                               );
                                             }),
                                       ],
                                     ),
-                                  );
+                                  )
+                                      : Container();
                                 },
 
                                 )

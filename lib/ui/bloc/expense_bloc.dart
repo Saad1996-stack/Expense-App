@@ -1,6 +1,7 @@
 import 'package:expense_tracker_app/data_local/database/dbhelper.dart';
+import 'package:expense_tracker_app/data_local/models/category_model.dart';
 import 'package:expense_tracker_app/data_local/models/expense_models.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:expense_tracker_app/domain/app_constants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -23,7 +24,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState>
         {
           List<ExpenseModels> allExpenses = await dbHelper.fetchAllExpense();
          // emit(ExpenseLoadedState(loadedExpenseModels: allExpenses));
-          emit(ExpenseFilteredLoadedState(mFilteredExpense: filterExp(allExpenses)));
+          emit(ExpenseFilteredLoadedState(mFilteredExpense: filterExp(allExpenses, 0)));
         }
       else
         {
@@ -56,62 +57,97 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState>
           df = DateFormat.y();
         }
 
-      emit(ExpenseFilteredLoadedState(mFilteredExpense: filterExp(allExpenses)));
+      emit(ExpenseFilteredLoadedState(mFilteredExpense: filterExp(allExpenses, event.type)));
     });
   }
 
-  List<ExpenseFilterModel> filterExp(List<ExpenseModels> allExpenses)
+  List<ExpenseFilterModel> filterExp(List<ExpenseModels> allExpenses, int type)
   {
     /*filteredExpense.clear();*/
     List<ExpenseFilterModel> filteredExpense = [];
-    List<String> uniqueDates = [];
 
-    for(ExpenseModels eachExp in allExpenses)
-    {
-      String eachDate = df.format(DateTime.fromMillisecondsSinceEpoch(int.parse(eachExp.eDate)));
-
-      if(!uniqueDates.contains(eachDate))
+    if(type<3)
       {
-        uniqueDates.add(eachDate);
-      }
+        List<String> uniqueDates = [];
 
-    }
-
-    print(uniqueDates);
-
-    for(String eachDate in uniqueDates)
-    {
-      num eachMillis = 0;
-      num balance = 0.0;
-      List<ExpenseModels> eachDateExp = [];
-
-      for(ExpenseModels eachExp in allExpenses)
-      {
-        eachMillis = int.parse(eachExp.eDate);
-        String eachExpDate = df.format(DateTime.fromMillisecondsSinceEpoch(int.parse(eachExp.eDate)));
-
-        if(eachExpDate == eachDate)
+        for(ExpenseModels eachExp in allExpenses)
         {
-          eachDateExp.add(eachExp);
+          String eachDate = df.format(DateTime.fromMillisecondsSinceEpoch(int.parse(eachExp.eDate)));
 
-          if(eachExp.eType == "Debit")
+          if(!uniqueDates.contains(eachDate))
           {
-            balance -= eachExp.eAmount!;
+            uniqueDates.add(eachDate);
           }
-          else
-          {
-            balance += eachExp.eAmount!;
-          }
+
         }
 
+        print(uniqueDates);
+
+        for(String eachDate in uniqueDates)
+        {
+          num balance = 0.0;
+          List<ExpenseModels> eachDateExp = [];
+
+          for(ExpenseModels eachExp in allExpenses)
+          {
+            String eachExpDate = df.format(DateTime.fromMillisecondsSinceEpoch(int.parse(eachExp.eDate)));
+
+            if(eachExpDate == eachDate)
+            {
+              eachDateExp.add(eachExp);
+
+              if(eachExp.eType == "Debit")
+              {
+                balance -= eachExp.eAmount;
+              }
+              else
+              {
+                balance += eachExp.eAmount;
+              }
+            }
+
+          }
+
+          print("eachDate: $eachDate");
+          print("balance: $balance");
+          print("items: ${eachDateExp.length}");
+
+          filteredExpense.add(ExpenseFilterModel(type: eachDate, balance: balance, allExpense: eachDateExp));
+        }
       }
 
-      print("eachDate: $eachDate");
-      print("balance: $balance");
-      print("items: ${eachDateExp.length}");
+    ///Category Wise
 
-      filteredExpense.add(ExpenseFilterModel(millis: eachMillis, type: eachDate, balance: balance, allExpense: eachDateExp));
-    }
+    else
+      {
+        var uniqueCat = AppConstants.mCat;
+
+        for(CategoryModel eachCat in uniqueCat)
+          {
+            num balance = 0.0;
+            List<ExpenseModels> eachCatExp = [];
+
+            for(ExpenseModels eachExp in allExpenses)
+              {
+                if(eachCat.category_id == eachExp.eCategoryId)
+                  {
+                    eachCatExp.add(eachExp);
+
+                    if(eachExp.eType == "Debit")
+                      {
+                        balance -= eachExp.eAmount;
+                      }
+                    else
+                      {
+                        balance += eachExp.eAmount;
+                      }
+                  }
+              }
+
+            filteredExpense.add(ExpenseFilterModel(type: eachCat.category_title, balance: balance, allExpense: eachCatExp));
+          }
+      }
+
     return filteredExpense;
   }
 
