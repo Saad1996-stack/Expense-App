@@ -108,8 +108,6 @@ class Login extends StatelessWidget
                       bool check = await dbHelper.authenticateUser(email: user.text, password: pass.text);
                       if(check)
                         {
-                          /*SharedPreferences prefs = await SharedPreferences.getInstance();
-                          prefs.setBool("Login", true);*/
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User Successfully Logged-in!!")));
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>ExpenseList()));
                         }

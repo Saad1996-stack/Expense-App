@@ -4,6 +4,7 @@ import 'package:expense_tracker_app/domain/app_constants.dart';
 import 'package:expense_tracker_app/domain/ui_helper.dart';
 import 'package:expense_tracker_app/ui/bloc/expense_bloc.dart';
 import 'package:expense_tracker_app/ui/bloc/expense_event.dart';
+import 'package:expense_tracker_app/ui/navigation_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -223,8 +224,23 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   width: 384,
                   child: ElevatedButton(onPressed: ()
                   async{
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    var prefs = await SharedPreferences.getInstance();
                     int uid = prefs.getInt("user_id") ?? 0;
+
+                    ///get last index balance in prefs
+                    num lastBal = prefs.getDouble("lastBal") ?? 0.0;
+
+                    ///update balance
+
+                    if(selectedType == "Debit")
+                      {
+                        lastBal -= double.parse(amountCont.text);
+                      }
+                    else
+                      {
+                        lastBal += double.parse(amountCont.text);
+                      }
+
 
                     ///implement same with Bloc
                     context.read<ExpenseBloc>().add(AddExpenseEvent(newAddExpModelEvent: ExpenseModels(
@@ -234,7 +250,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         eTitle: titleCont.text,
                         eDesc: descCont.text,
                         eAmount: double.parse(amountCont.text),
-                        eBalance: 0,
+                        eBalance: lastBal.toDouble(),
                         eType: selectedType)));
 
 
@@ -248,7 +264,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         eAmount: double.parse(amountCont.text),
                         eBalance: 0,
                         eType: selectedType),);*/
-                    Navigator.pop(context);
+
+                    context.read<NavigationProvider>().navIndex = 0;
                   },
                       child: Text("Add Expense",),
                     style: ElevatedButton.styleFrom(

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:expense_tracker_app/ui/dashboard_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,7 +20,7 @@ class _ExpenseSplashScreenState extends State<ExpenseSplashScreen>
   {
     super.initState();
     Timer(Duration(seconds: 3), ()async{
-      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var prefs = await SharedPreferences.getInstance();
       int uid = prefs.getInt("user_id") ?? 0;
 
       ///using if-else
@@ -36,7 +37,7 @@ class _ExpenseSplashScreenState extends State<ExpenseSplashScreen>
 
       if(uid > 0)
       {
-        navigateTo = ExpenseList();
+        navigateTo = DashboardPage();
       }
 
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> navigateTo));

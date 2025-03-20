@@ -60,7 +60,7 @@ class DBHelper {
 
       ///Table Expense
       db.execute(
-          "create table $TABLE_EXPENSE ( $COLUMN_EXPENSE_ID integer primary key autoincrement, $COLUMN_EXPENSE_FK_USER_ID integer, $COLUMN_EXPENSE_TITLE text, $COLUMN_EXPENSE_DESC text, $COLUMN_EXPENSE_AMOUNT real, $COLUMN_EXPENSE_BALANCE real, $COLUMN_EXPENSE_TYPE text, $COLUMN_EXPENSE_DATE text, $COLUMN_EXPENSE_CATEGORY_ID integer, FOREIGN KEY ($COLUMN_EXPENSE_FK_USER_ID) REFERENCES $TABLE_USER($COLUMN_USER_ID) )");
+          "create table $TABLE_EXPENSE ( $COLUMN_EXPENSE_ID integer primary key autoincrement, $COLUMN_EXPENSE_FK_USER_ID integer, $COLUMN_EXPENSE_TITLE text, $COLUMN_EXPENSE_DESC text, $COLUMN_EXPENSE_AMOUNT real, $COLUMN_EXPENSE_BALANCE real, $COLUMN_EXPENSE_TYPE text, $COLUMN_EXPENSE_DATE text, $COLUMN_EXPENSE_CATEGORY_ID integer )");
 
       ///Table Category
       db.execute(
@@ -68,6 +68,22 @@ class DBHelper {
 
     });
 
+  }
+
+  ///Fetch all user data
+
+  Future<List<UserModel>>fetchAllUser()
+  async{
+    var db = await getDB();
+    List<Map<String,dynamic>>mUserData = await db.query(TABLE_USER);
+    List<UserModel>mUserModel = [];
+
+    for(int i=0; i<mUserData.length; i++)
+      {
+        UserModel eachUser = UserModel.fromMap(mUserData[i]);
+        mUserModel.add(eachUser);
+      }
+    return mUserModel;
   }
 
   ///User Registration
@@ -150,5 +166,6 @@ class DBHelper {
       }
     return mExpenses;
   }
+
 
 }

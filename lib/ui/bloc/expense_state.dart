@@ -20,7 +20,8 @@ final class ExpenseLoadedState  extends ExpenseState
 final class ExpenseFilteredLoadedState  extends ExpenseState
 {
   List<ExpenseFilterModel> mFilteredExpense;
-  ExpenseFilteredLoadedState({required this.mFilteredExpense});
+  num bal;
+  ExpenseFilteredLoadedState({required this.bal,required this.mFilteredExpense});
 }
 
 final class ExpenseErrorState extends ExpenseState

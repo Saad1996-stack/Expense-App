@@ -1,21 +1,21 @@
 import 'package:expense_tracker_app/data_local/database/dbhelper.dart';
 
 class ExpenseModels {
-  int eId;
-  int userId;
-  int eCategoryId;
+  int? eId;
+  int? userId;
+  int? eCategoryId;
   String eTitle;
   String eDesc;
   String eType;
   String eDate;
-  double eAmount;
-  double eBalance;
+  double? eAmount;
+  double? eBalance;
 
   ExpenseModels(
       {required this.eDate,
       required this.eCategoryId,
       required this.userId,
-      this.eId = 0,
+      this.eId,
       required this.eTitle,
       required this.eDesc,
       required this.eAmount,

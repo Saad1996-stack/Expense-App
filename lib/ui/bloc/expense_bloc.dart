@@ -4,6 +4,7 @@ import 'package:expense_tracker_app/data_local/models/expense_models.dart';
 import 'package:expense_tracker_app/domain/app_constants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data_local/models/expense_filter_model.dart';
 import 'expense_event.dart';
@@ -23,8 +24,12 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState>
       if(check)
         {
           List<ExpenseModels> allExpenses = await dbHelper.fetchAllExpense();
+          ///store last index balance in prefs
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setDouble("lastBal", allExpenses.last.eBalance ?? 0.0);
+
          // emit(ExpenseLoadedState(loadedExpenseModels: allExpenses));
-          emit(ExpenseFilteredLoadedState(mFilteredExpense: filterExp(allExpenses, 0)));
+          emit(ExpenseFilteredLoadedState(mFilteredExpense: filterExp(allExpenses, 0), bal: allExpenses.isNotEmpty ? allExpenses.last.eBalance ?? 0.0 : 0.0));
         }
       else
         {
@@ -44,6 +49,16 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState>
 
       List<ExpenseModels> allExpenses = await dbHelper.fetchAllExpense();
 
+      ///store last index balance in prefs
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      if(allExpenses.isNotEmpty){
+      prefs.setDouble("lastBal", allExpenses.last.eBalance ?? 0.0);
+      }
+      else
+        {
+          prefs.setDouble("lastBal", 0.0);
+        }
+
       if(event.type==0)
         {
           df = DateFormat.yMMMd();
@@ -57,7 +72,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState>
           df = DateFormat.y();
         }
 
-      emit(ExpenseFilteredLoadedState(mFilteredExpense: filterExp(allExpenses, event.type)));
+      emit(ExpenseFilteredLoadedState(mFilteredExpense: filterExp(allExpenses, event.type), bal: allExpenses.isNotEmpty ? allExpenses.last.eBalance ?? 0.0 : 0.0));
     });
   }
 
@@ -98,11 +113,11 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState>
 
               if(eachExp.eType == "Debit")
               {
-                balance -= eachExp.eAmount;
+                balance -= eachExp.eAmount!;
               }
               else
               {
-                balance += eachExp.eAmount;
+                balance += eachExp.eAmount!;
               }
             }
 
@@ -135,11 +150,11 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState>
 
                     if(eachExp.eType == "Debit")
                       {
-                        balance -= eachExp.eAmount;
+                        balance -= eachExp.eAmount!;
                       }
                     else
                       {
-                        balance += eachExp.eAmount;
+                        balance += eachExp.eAmount!;
                       }
                   }
               }
